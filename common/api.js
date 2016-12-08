@@ -1,3 +1,5 @@
+import { ajaxGetJSON } from 'rxjs/observable/dom/AjaxObservable';
+
 import makeFetch from './utils/make-fetch.js';
 import serializeForm from './utils/serialize-form.js';
 
@@ -8,6 +10,17 @@ const defaultOptions = {
     'Content-Type': 'application/json'
   }
 };
+
+// Add default headers
+const defaultHeaders = {
+  'Content-Type': 'application/json'
+}
+
+// Add ajax get json
+export function getProducts() {
+  return ajaxGetJSON('/api/products');
+}
+
 export function fetchProducts() {
   return makeFetch('/api/products');
 }
@@ -56,15 +69,26 @@ export function deleteFromCart(userId, token, itemId) {
   );
 }
 
+
+// This right here for ajax requests
 export function fetchUser(id, token) {
-  const options = {
-    ...defaultOptions,
-    method: 'GET'
-  };
-  return makeFetch(api + `/${id}?access_token=${token}`, options)
+  return ajaxGetJSON(
+      api + `/${id}?access_token=${token}`,
+      defaultHeaders
+    )
     // normalize user data
-    .then(user => ({ ...user, accessToken: token }));
+    .map(user => ({ ...user, accessToken: token }));
 }
+
+// export function fetchUser(id, token) {
+//   const options = {
+//     ...defaultOptions,
+//     method: 'GET'
+//   };
+//   return makeFetch(api + `/${id}?access_token=${token}`, options)
+//     // normalize user data
+//     .then(user => ({ ...user, accessToken: token }));
+// }
 
 export function auth(isSignUp, form) {
   const options = {
